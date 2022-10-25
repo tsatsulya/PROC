@@ -6,7 +6,7 @@ const size_t NAME_SIZE = 16;
 
 typedef enum TokenType {
     NUMBER    = 'N',
-    IDENT_TYPE  = 'I',
+    IDENT_COMMAND  = 'I',
     UNDF_TYPE = 'U'
 }TokenType;
 
