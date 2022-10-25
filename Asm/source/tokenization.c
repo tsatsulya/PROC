@@ -35,24 +35,28 @@ static long long int pow_(int x, int power) {
 }
 
 
-static int get_word(char* word, int* length, int start, const char *code) {   
+static int get_word(char** word, int* length, int start, const char* code) {   
 
+    char **words = (char**) calloc(sizeof(char*), input_format_max_len);
+
+    
     for (; *(code + start) == ' '; start++) {}
 
     int shift = start;
 
     for (;; shift++) {
-        if (*(code + shift) == ' ' || *(code + shift) == '\n') {
+        if (code[shift] == ' ' || code[shift] == '\n') {
             break;
         }
         else {
-            //printf("%c",*(code + shift));
-            word[shift-start] = *(code + shift);
+            (*word)[shift-start] = *(code + shift);
         }
     }
     *length = shift - start;
+    printf("rrrr %s ttt\n", *word);
+    // printf("%d\n", shift);
     return shift++;
-}
+}   
 
 static int str_to_int(const char* string) {
     int number = 0;
@@ -118,12 +122,14 @@ static int string_split(char* code_string, char** words) {
             return INCORRECT_INPUT;
         }
 
-        char word[input_format_max_len];   
+        char* word;
+           
         int length = 0;
 
-        shift = get_word(word, &length, shift+1, code_string);
+        shift = get_word(&word, &length, shift+1, code_string);
         //printf("word: %s, length: %d\n", word, length);
         words[word_count] = word;
+        puts(words[word_count]);
         word_count++;
     }
     return  word_count;
@@ -160,30 +166,24 @@ static status realloc_lines(char** lines, int* current_num_of_lines,  int line) 
     return OK;
 }
 
-static int code_split(char* full_line, char** array_of_lines) { 
+static char** code_split(FILE* file, int* num_of_lines) { 
 
+    char **lines = (char**) calloc(sizeof(char*), max_num_of_lines);
     int current_max_num_of_lines = max_num_of_lines;
-    // 
-    int line_count = 1;
-    array_of_lines[0] = full_line;
+    int line_count = 0;
+    while (!feof(file)) {
 
-    for (int i = 0; full_line[i] != '\0'; i++) {
-
-        if (line_count == current_max_num_of_lines) {
-            realloc_lines(array_of_lines, &current_max_num_of_lines, line_count);
+        if (line_count >= current_max_num_of_lines) {
+            realloc_lines(lines, &current_max_num_of_lines, line_count);
         }
-
-        if (full_line[i] == '\n')  {
-
-                full_line[i] = '\0';
-
-                array_of_lines[line_count] = full_line + i + 1;
-                line_count++;
-        }   
+        lines[line_count] = (char*) calloc(sizeof(char), code_string_max_len);
+        fgets(lines[line_count], code_string_max_len, file);
+        line_count++;
     }
-
-    return line_count;
+    *num_of_lines = line_count;
+    return lines;
 }
+
 
 
 
@@ -197,27 +197,23 @@ status tokenize(Token** token_sequence, size_t* num_of_tokens, const char* const
 
     ERROR(code_file == NULL, FILE_ERR);
 
-    fseek(code_file, 0, SEEK_END);
-    int num_of_symbols = ftell(code_file) + 1;
-    rewind(code_file);
+    // fseek(code_file, 0, SEEK_END);
+    // int num_of_symbols = ftell(code_file) + 1;
+    // rewind(code_file);
 
-    char* code = (char*) calloc(sizeof (char), num_of_symbols);
+    // char* code = (char*) calloc(sizeof (char), num_of_symbols);
     
-    if (code == NULL) {
-        fclose (code_file);
-        return MEM_ERR;
-    }
+    // if (code == NULL) {
+    //     fclose (code_file);
+    //     return MEM_ERR;
+    // }
 
-    fread(code, sizeof(char), num_of_symbols, code_file);
+    // fread(code, sizeof(char), num_of_symbols, code_file);
 
-    char** code_lines = (char**) calloc(sizeof(char), max_num_of_lines);
-
-    int num_of_code_lines = code_split(code, code_lines);
-
+    char** code_lines;
+    int num_of_code_lines = 0;
+    code_lines = code_split(code_file, &num_of_code_lines);
     fclose(code_file);
-
-
-
 
     Token* tokens = (Token*) calloc(sizeof(Token), start_max_num_of_tokens);
 
@@ -229,6 +225,7 @@ status tokenize(Token** token_sequence, size_t* num_of_tokens, const char* const
     int current_tokens_size = start_max_num_of_tokens;
 
     int token_id = 0;
+
     for (int line = 0; line < num_of_code_lines; line++) {
         char* words[2] = {};
         int num_of_words = string_split(code_lines[line], words);
