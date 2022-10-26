@@ -4,7 +4,7 @@
 int main() {
 
     Token* tokens;
-    size_t num_of_tokens;
+    int num_of_tokens;
     if (commands[0]) {}
     status status_ = tokenize(&tokens, &num_of_tokens, "test.txt");
     printf("%d", status_);

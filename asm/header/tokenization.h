@@ -17,9 +17,9 @@ typedef struct Token {
     int number; 
 }Token;
 
-static const Token POISON = {'U', "UNDEFINED", 0};
+static const Token POISON = {UNDF_TYPE, "UNDEFINED", 0};
 
 
-status tokenize(Token** tokens, size_t* num_of_tokens, const char* const code_file_name);
+status tokenize(Token** tokens, int* num_of_tokens, const char* const code_file_name);
 
 //int get_sequence( char *dest, const char* const code, const  input_formats_first_id );

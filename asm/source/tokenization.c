@@ -8,8 +8,8 @@
 
 const int code_string_max_len = 32;
 const int input_format_max_len = 16; 
-
-const int max_num_of_lines = 256;
+const int words_in_line = 2;
+const int max_num_of_lines = 20;
 const int start_max_num_of_tokens = max_num_of_lines * 2;
 
 
@@ -35,47 +35,46 @@ static long long int pow_(int x, int power) {
 }
 
 
-static int get_word(char** word, int* length, int start, const char* code) {   
+static int get_word(char** word_, int* word_length, int start, const char *code) {   
 
-    char **words = (char**) calloc(sizeof(char*), input_format_max_len);
-
-    
     for (; *(code + start) == ' '; start++) {}
 
     int shift = start;
+    char* word = (char*) calloc(sizeof(char), input_format_max_len);
 
     for (;; shift++) {
-        if (code[shift] == ' ' || code[shift] == '\n') {
+        if (code[shift] == ' ' || code[shift] == '\n' || code[shift] == '\0') {
             break;
         }
         else {
-            (*word)[shift-start] = *(code + shift);
+            word[shift-start] = *(code + shift);
         }
     }
-    *length = shift - start;
-    printf("rrrr %s ttt\n", *word);
-    // printf("%d\n", shift);
+    puts(word);
+   
+    *word_length = shift - start;
+    *word_ = word;
+
     return shift++;
-}   
+}
 
 static int str_to_int(const char* string) {
+
     int number = 0;
-    int length = sizeof(string) - 1; //<- AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    int length = (int) strlen(string); //<- AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
     for (int i = 0; i < length; i++) {
         int n = string[i];
-        number += (n - 48) * pow_(10, length - i);
+        number += (n - 48) * (int)pow_(10, length - i-1);
     }
     return number;
 }
+
 static int string_is_number(const char* string) {
-
-    int length = sizeof(string) - 1; //<- AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-
+    int length = (int) strlen(string); 
     for (int i = 0; i < length; i++) {
         int n = string[i];
-
-        if ( n < 48 || 57 > n)
+        if ( n < 48 || 57 < n)
             return false;
     }
     return true;
@@ -98,8 +97,9 @@ static status check_command(char** words, int word_count) {
         bool is_push = !strcmp(words[0], "push");
         bool args = (word_count == 1) ? false : string_is_number(words[1]);
 
-        if (!(is_push ^ args)) 
+        if (!(is_push ^ args)) { 
             return OK;
+        }
         else 
             return INCORRECT_INPUT;
     }
@@ -109,31 +109,19 @@ static status check_command(char** words, int word_count) {
 }
 
 
+static status realloc_lines(char** lines, int* current_num_of_lines,  int line) {
 
-static int string_split(char* code_string, char** words) {
+    *current_num_of_lines *= 2;
+    char** implemented_lines = (char**) realloc(lines, sizeof(char*) * (*current_num_of_lines));
 
-    if (!code_string) return BAD_PTR;
-    int shift = -1;
-    int word_count = 0;
+    ERROR(!implemented_lines, MEM_ERR);
+    
+    lines = implemented_lines;
 
-    while (code_string[shift] != '\n') {
-
-        if (word_count == 2) {
-            return INCORRECT_INPUT;
-        }
-
-        char* word;
-           
-        int length = 0;
-
-        shift = get_word(&word, &length, shift+1, code_string);
-        //printf("word: %s, length: %d\n", word, length);
-        words[word_count] = word;
-        puts(words[word_count]);
-        word_count++;
-    }
-    return  word_count;
-    //puts("end");
+    for (int new_line = line; new_line < *current_num_of_lines; new_line++)
+        lines[new_line] = NULL;
+    
+    return OK;
 }
 
 static status realloc_tokens(Token* tokens, int* current_num_of_tokens,  int token_id) {
@@ -151,24 +139,45 @@ static status realloc_tokens(Token* tokens, int* current_num_of_tokens,  int tok
     return OK;
 }
 
-static status realloc_lines(char** lines, int* current_num_of_lines,  int line) {
 
-    *current_num_of_lines *= 2;
-    char** implemented_lines = (char**) realloc(lines, sizeof(char*) * (*current_num_of_lines));
+static char** string_split(char* code, int* num_of_words) {
 
-    ERROR(!implemented_lines, MEM_ERR);
-    
-    lines = implemented_lines;
+    int current_max_words_in_line = words_in_line;
 
-    for (int new_line = line; new_line < *current_num_of_lines; new_line++)
-        lines[new_line] = NULL;
-    
-    return OK;
+    char** words = (char**) calloc(sizeof(char*), 2);
+    //printf("words: %lu\n", sizeof(char*) * 2);
+
+    int shift = -1;
+    int word_count = 0;
+    int line_length = strlen(code);
+
+    while (code[shift] != '\n') {
+
+        if (word_count >= current_max_words_in_line) {
+            realloc_lines(words, &current_max_words_in_line, word_count);
+        }
+
+        words[word_count] = (char*) calloc(sizeof(char), input_format_max_len);
+        //printf("word: %lu\n", sizeof(char) * input_format_max_len);
+
+        int word_length = 0;
+
+        shift = get_word(&words[word_count], &word_length, shift+1, code);
+        // printf("word: %s, length: %d\n", words[word_count], length);
+
+        word_count++;
+
+        if (shift == line_length) break;
+    }
+    *num_of_words = word_count;
+    return words;
 }
 
 static char** code_split(FILE* file, int* num_of_lines) { 
 
-    char **lines = (char**) calloc(sizeof(char*), max_num_of_lines);
+    char** lines = (char**) calloc(sizeof(char*), max_num_of_lines);
+    //printf("lines: %lu\n", sizeof(char*) * max_num_of_lines);
+
     int current_max_num_of_lines = max_num_of_lines;
     int line_count = 0;
     while (!feof(file)) {
@@ -177,6 +186,8 @@ static char** code_split(FILE* file, int* num_of_lines) {
             realloc_lines(lines, &current_max_num_of_lines, line_count);
         }
         lines[line_count] = (char*) calloc(sizeof(char), code_string_max_len);
+        //printf("line: %lu\n", sizeof(char) * code_string_max_len);
+
         fgets(lines[line_count], code_string_max_len, file);
         line_count++;
     }
@@ -187,7 +198,7 @@ static char** code_split(FILE* file, int* num_of_lines) {
 
 
 
-status tokenize(Token** token_sequence, size_t* num_of_tokens, const char* const code_file_name) {
+status tokenize(Token** token_sequence, int* num_of_tokens, const char* const code_file_name) {
 
     ERROR(!token_sequence, BAD_PTR); //is_bad_ptr() ?
     ERROR(!num_of_tokens, BAD_PTR);
@@ -197,38 +208,26 @@ status tokenize(Token** token_sequence, size_t* num_of_tokens, const char* const
 
     ERROR(code_file == NULL, FILE_ERR);
 
-    // fseek(code_file, 0, SEEK_END);
-    // int num_of_symbols = ftell(code_file) + 1;
-    // rewind(code_file);
-
-    // char* code = (char*) calloc(sizeof (char), num_of_symbols);
-    
-    // if (code == NULL) {
-    //     fclose (code_file);
-    //     return MEM_ERR;
-    // }
-
-    // fread(code, sizeof(char), num_of_symbols, code_file);
-
-    char** code_lines;
     int num_of_code_lines = 0;
-    code_lines = code_split(code_file, &num_of_code_lines);
+    char** code_lines = code_split(code_file, &num_of_code_lines);
+
     fclose(code_file);
 
     Token* tokens = (Token*) calloc(sizeof(Token), start_max_num_of_tokens);
-
+    //printf("tokens: %lu\n", sizeof(Token) * start_max_num_of_tokens);
     ERROR(!tokens, MEM_ERR);
-    
+
     for (int token_id = 0; token_id < start_max_num_of_tokens; token_id++)
         tokens[token_id] = POISON;
 
-    int current_tokens_size = start_max_num_of_tokens;
 
+    int current_tokens_size = start_max_num_of_tokens;
     int token_id = 0;
 
     for (int line = 0; line < num_of_code_lines; line++) {
-        char* words[2] = {};
-        int num_of_words = string_split(code_lines[line], words);
+
+        int num_of_words = 0;
+        char** words = string_split(code_lines[line], &num_of_words);
 
         ERROR(check_command(words, num_of_words), INCORRECT_INPUT);
 
@@ -248,6 +247,7 @@ status tokenize(Token** token_sequence, size_t* num_of_tokens, const char* const
             tokens[token_id].number = (i == 1) ? str_to_int(words[i]) : 0;
             
             token_id++;
+            // printf("token_id %d\n", token_id);
 
         }
     }
@@ -263,3 +263,4 @@ status tokenize(Token** token_sequence, size_t* num_of_tokens, const char* const
 
 
 //realloc for tokens and for code_lines
+
