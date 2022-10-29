@@ -1,5 +1,5 @@
 push 3
-push 3
+push -3
 add
 push 2
 mul

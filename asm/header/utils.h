@@ -1,20 +1,19 @@
 #pragma once
 
-#ifndef UTILS_H_INCLUDED
-#define UTILS_H_INCLUDED
-
-typedef enum status {
+#include <stdbool.h>
+typedef enum status_t {
     OK = 0              ,
     MEM_ERR = -4096     ,
     BAD_PTR             ,
     FILE_ERR            ,
     INCORRECT_INPUT     ,
-}status;
+}status_t;
+
+
+long long int pow_(int x, int power);
+bool string_is_number(const char* string);
+int str_to_int(const char* string);
 
 
 
-static const char* commands[]  = {"push", "add", "sub", "mul", "div", "out", "htl"};
-static const int num_of_commands = 7;
-
-#endif
 

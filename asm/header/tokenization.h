@@ -20,6 +20,12 @@ typedef struct Token {
 static const Token POISON = {UNDF_TYPE, "UNDEFINED", 0};
 
 
-status tokenize(Token** tokens, int* num_of_tokens, const char* const code_file_name);
+static const int code_string_max_len = 32;
+static const int input_format_max_len = 16; 
+static const int words_in_line = 2;
+static const int max_num_of_lines = 20;
+static const int start_max_num_of_tokens = max_num_of_lines * 2;
+
+status_t tokenize(Token** tokens, int* num_of_tokens, const char* const code_file_name);
 
 //int get_sequence( char *dest, const char* const code, const  input_formats_first_id );

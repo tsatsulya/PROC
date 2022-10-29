@@ -1,0 +1,11 @@
+DUMP was called from source/stack.c :: stack_change_length :: 166
+The stack address: [0x7fff11202d80]
+The data begining address: [0x8c00a0]
+capacity: 5
+num of elements: 0
+Hash was damaged!
+Stack hash: 18446744073572538936
+Actual hash: 18446744071864713691
+Stack hash: 18446744073572538936
+left_canary: dead000
+right_canary: dead000
