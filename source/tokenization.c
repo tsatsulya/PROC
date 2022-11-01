@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ERROR_(COND, TO_RET)                                     \
+#define ERROR_(COND, TO_RET)                                    \
     if (COND) {                                                 \
         return TO_RET;                                          \
     }
@@ -225,27 +225,28 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
         int num_of_words = 0;
         char** words = string_split(code_lines[line], &num_of_words);
 
-        ERROR_(check_command(words, num_of_words), INCORRECT_INPUT);
+       // ERROR_(check_command(words, num_of_words), INCORRECT_INPUT);
 
         for (int i = 0; i < num_of_words; i++) {
 
             if (token_id >= current_tokens_size) 
                 realloc_tokens(tokens, &current_tokens_size, token_id);
-                        
-            // tokens[token_id] = ({  
-            //     .type = (i == 0) ? IDENT_COMMAND : NUMBER,
-            //     .name = words[i],
-            //     .number = (i == 1) ? str_to_int(words[i]) : 0
-            // }) suk(((((((
             
             if (i == 0) {
+
                 int length = strlen(words[0]);
+
                 if (words[0][length - 1] == ':') {
+
                     tokens[token_id].type = LABEL; 
                     words[0] = get_lable_name(words[0]);
-                    }
-                else
-                    tokens[token_id].type = IDENT_COMMAND;
+                }
+                else {
+                    if (is_command(words[0]))   
+                        tokens[token_id].type = IDENT_COMMAND;
+                    else 
+                        tokens[token_id].type = UNDF_TYPE;
+                }
             }     
             else 
                 tokens[token_id].type = (strcmp(words[0], "jump") == 0 ) ? JUMP_TO : NUMBER;

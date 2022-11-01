@@ -83,6 +83,7 @@ status_t assemble(AsmData* data) {
 
     }
 
+    int jump_count;
     for (int i = 0; i < num_of_tokens; i++) {
 
         if (!strcmp(*(tokens[i].name), "jump")) {

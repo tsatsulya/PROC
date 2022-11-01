@@ -40,17 +40,17 @@ status_t cpu_exec(Processor* cpu) {
 
     Stack cpu_stack;
     stack_init(&cpu_stack, 5);
-    int ax = 5;
+    int ax = 0;
     for (int i = 0; i < cpu->code_size; i++) {
 
-        printf("cpu i %d\n", i);
+        //printf("cpu i %d\n", i);
         int command_id = cpu->code[i];
 
         if (command_id == PUSH) {
             stack_push(&cpu_stack, cpu->code[i+1]);
         }
         else if (command_id == ADD) {
-            stack_push(&cpu_stack, stack_pop(&cpu_stack) + stack_pop(&cpu_stack)); //1element?
+            stack_push(&cpu_stack, stack_pop(&cpu_stack) + stack_pop(&cpu_stack)); //1 element?
         }
         else if (command_id == SUB) {
             stack_push(&cpu_stack, (-1) * stack_pop(&cpu_stack) + stack_pop(&cpu_stack)); //
@@ -65,11 +65,11 @@ status_t cpu_exec(Processor* cpu) {
             printf("%d\n", stack_get_last_element(&cpu_stack));
         }
         else if (command_id == JUMP) {
-        if (ax) {
-            puts("jump");
-            i = cpu->code[i+1];
-            ax--;
-        }
+            if (ax) {
+                //puts("jump");
+                i = cpu->code[i+1];
+                ax--;
+            }
         }
     }
     //HLT!!!!!!!!!!!!!!!

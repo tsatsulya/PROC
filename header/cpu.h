@@ -12,6 +12,10 @@ typedef struct Processor {
 
     Stack* cpu_stack;
     int RAM[0x10000];
+
+    bool equal_flag;
+    bool above_flag;
+    bool less_flag;
 } Processor;
 
 
