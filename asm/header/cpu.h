@@ -6,8 +6,10 @@
 
 
 typedef struct Processor {
+
     int* code;
     int code_size;
+
     Stack* cpu_stack;
     int RAM[0x10000];
 } Processor;

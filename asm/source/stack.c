@@ -77,31 +77,23 @@ static stack_status stack_check_hash(Stack* stack) {
     return (actual_stack_hash == correct_stack_hash) ? SUCCESS : INVALID_HASH;
 }
 
+static Canary_data* get_left_canary_position(Stack* stack) {
+    return (Canary_data*)stack->data;
+}
+
+static Canary_data* get_right_canary_position(Stack* stack) {
+    return (Canary_data*)(stack->data + sizeof(Stack_data) * stack->capacity + sizeof(Canary_data));
+}
+
+
 static unsigned stack_check_canaries(Stack* stack) {
+
     if (!stack) return STACK_NULL;
-    // Stack new_stack = {}; // TODO: way to copy stack, when shallow copy is disabled
-    // stack_copy(&new_stack, stack);
-
-    // Stack first = {};
-    // stack_init(&first);
-
-    // Stack second = first;
-    // stack_push(&second); // Stack outputs: Poshel nahui, not stack i was hoping for
-
-    // Alternative would be:
-    // Stack second = {};
+        unsigned status = SUCCESS;
     
-    // stack_copy(&second, &first); // TODO: some other way to copy stack
+    if (*get_left_canary_position(stack) != CANARY) status |= DAMAGED_LEFT_CANARY; 
 
-    // CANARY ^ stack
-
-    
-
-    unsigned status = SUCCESS;
-    
-    //if (*get_left_canary_position(stack) != CANARY) status |= DAMAGED_LEFT_CANARY; 
-
-    //if (*get_right_canary_position(stack) != CANARY) status |= DAMAGED_RIGHT_CANARY;
+    if (*get_right_canary_position(stack) != CANARY) status |= DAMAGED_RIGHT_CANARY;
 
     return status;
 }
@@ -188,13 +180,6 @@ static stack_status stack_length_down(Stack* stack) {
 
 
 
-static Canary_data* get_left_canary_position(Stack* stack) {
-    return (Canary_data*)stack->data;
-}
-
-static Canary_data* get_right_canary_position(Stack* stack) {
-    return (Canary_data*)(stack->data + sizeof(Stack_data) * stack->capacity + sizeof(Canary_data));
-}
 
 static void print_canaries(Stack* stack, FILE* file) {
     
@@ -206,8 +191,6 @@ static stack_status set_canaries(Stack* stack) {
     *get_left_canary_position(stack) = *get_right_canary_position(stack) = CANARY;
     return SUCCESS;
 }
-
-
 
 static unsigned long int gnu_hash(void* data, size_t size) {
 
@@ -293,7 +276,6 @@ Stack_data stack_pop(Stack* stack) {
 
     Stack_data last_element = get_element(stack, stack->element_count-1);
     stack->element_count--;
-    //printf("elem %d", last_element);
     
     stack_resize(stack);
     stack_rehash(stack);

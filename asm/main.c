@@ -4,26 +4,19 @@
 int main() {
 
     Token* tokens = NULL;
-    // status_t status = tokenize(&tokens, &num_of_tokens, "test.txt");
+    char* in_file_name = "test.txt";
+    char* out_file_name = "test_out.txt";  
     AsmData data = {
-        .in_file_name = "test.txt",
-        .out_file_name = "test_out.txt",
+        .in_file_name = &in_file_name,
+        .out_file_name = &out_file_name,
         .tokens = tokens,
         .num_of_tokens = 0,
     };
-    assemble(&data);
-    //printf("%d", status);
-
+    status_t status = assemble(&data);
+    printf(" status %d\n", status);
     Processor proc;
     cpu_load(&proc, "test_out.txt");
-
-    Stack my_stack;
-    stack_init(&my_stack, 5);
-    stack_push(&my_stack, 66);
-    puts("ura");
     cpu_exec(&proc);
-
-    // stack_dump(proc.cpu_stack, __FILE__, __func__, __LINE__, OK);
 
     return 0;
 }

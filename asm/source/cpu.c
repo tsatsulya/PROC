@@ -40,37 +40,45 @@ status_t cpu_exec(Processor* cpu) {
 
     Stack cpu_stack;
     stack_init(&cpu_stack, 5);
+    int ax = 5;
     for (int i = 0; i < cpu->code_size; i++) {
 
+        printf("cpu i %d\n", i);
         int command_id = cpu->code[i];
 
         if (command_id == PUSH) {
             stack_push(&cpu_stack, cpu->code[i+1]);
         }
         else if (command_id == ADD) {
-            stack_push(&cpu_stack, stack_pop(&cpu_stack) + stack_pop(&cpu_stack));
+            stack_push(&cpu_stack, stack_pop(&cpu_stack) + stack_pop(&cpu_stack)); //1element?
         }
         else if (command_id == SUB) {
-            stack_push(&cpu_stack, (-1) * stack_pop(&cpu_stack) + stack_pop(&cpu_stack));
+            stack_push(&cpu_stack, (-1) * stack_pop(&cpu_stack) + stack_pop(&cpu_stack)); //
         }
         else if (command_id == MUL) {
-            stack_push(&cpu_stack, stack_pop(&cpu_stack) * stack_pop(&cpu_stack));
+            stack_push(&cpu_stack, stack_pop(&cpu_stack) * stack_pop(&cpu_stack)); //
         }
         else if (command_id == DIV) {
-            stack_push(&cpu_stack, 1 / stack_pop(&cpu_stack) * stack_pop(&cpu_stack));
+            stack_push(&cpu_stack, 1 / stack_pop(&cpu_stack) * stack_pop(&cpu_stack)); //
         }
         else if (command_id == OUT) {
-            printf("%d", stack_get_last_element(&cpu_stack));
+            printf("%d\n", stack_get_last_element(&cpu_stack));
+        }
+        else if (command_id == JUMP) {
+        if (ax) {
+            puts("jump");
+            i = cpu->code[i+1];
+            ax--;
+        }
         }
     }
-
+    //HLT!!!!!!!!!!!!!!!
     return OK;
 }
 
-// #define ADD  2
-// #define SUB  3
-// #define MUL  4
-// #define DIV  5
-// #define OUT  6
-// #define HLT  7
-// #define ERROR -1
+
+// static const int SET_LABEL  = 0x1abe1;
+// static const int OUT        = 6;
+// static const int HLT        = 7;
+// static const int JUMP       = 8;
+// static const int ERROR      = -1;

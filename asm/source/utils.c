@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "string.h"
+#include "stdio.h"
 long long int pow_(int x, int power) {
     long long int result = 1;
     for (int y = 0; y < power; y++) {
@@ -12,6 +13,7 @@ long long int pow_(int x, int power) {
 bool string_is_number(const char* string) {
 
     int length = (int) strlen(string); 
+    if (!length) return false;
     for (int i = 0; i < length; i++) {
         if (i == 0 && string[i] == '-')
             continue;

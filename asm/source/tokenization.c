@@ -11,9 +11,28 @@
 
 
 
-static const char* commands[]  = {"push", "add", "sub", "mul", "div", "out", "htl"};
-static const int num_of_commands = 7;
+static const char* commands[]  = {"push", "add", "sub", "mul", "div", "out", "htl", "jump"};
+static const int num_of_commands = 8;
 
+
+static bool is_not_empty(char* line) {
+
+    if (strlen(line) <= 1) return false;
+
+    for (int i = 0; ; i++) {
+        if (line[i] == '\0' && line[i] == '\n') break;
+        if (line[i] != 32) return true;
+    }
+    return false;
+}
+
+static char* get_lable_name(char* code_lable) {
+    int length = strlen(code_lable);
+    char* lable_name = (char*) calloc(1, length-1);
+    strncpy(lable_name, code_lable, length - 1);
+
+    return lable_name;
+}
 
 static int get_word(char** word_, int* word_length, int start, const char *code) {   
 
@@ -34,12 +53,16 @@ static int get_word(char** word_, int* word_length, int start, const char *code)
    
     *word_length = shift - start;
     *word_ = word;
-
     return shift++;
 }
 
 
 static bool is_command(char* string) {
+
+    int length = strlen(string);
+    if (string[length-1] == ':') 
+        return true;
+
     for (int i = 0; i < num_of_commands; i++) {
         if (strcmp(string, commands[i]) == 0) 
             return true; 
@@ -49,20 +72,30 @@ static bool is_command(char* string) {
 
 static status_t check_command(char** words, int word_count) {
 
+
     if (word_count > 2) return INCORRECT_INPUT;
 
     if (is_command(words[0])) {
+
         bool is_push = !strcmp(words[0], "push");
         bool args = (word_count == 1) ? false : string_is_number(words[1]);
 
-        if (!(is_push ^ args)) { 
+        bool is_jump = !strcmp(words[0], "jump");
+        bool label = (word_count == 2); //number?
+
+        if (!(is_push ^ args)) 
             return OK;
-        }
+
+        else if (is_jump && label) 
+            return OK;         
+        
         else 
             return INCORRECT_INPUT;
+        
     }
-    else 
+    else {
         return INCORRECT_INPUT;
+    }
      
 }
 
@@ -120,7 +153,7 @@ static char** string_split(char* code, int* num_of_words) {
 
         shift = get_word(&words[word_count], &word_length, shift+1, code);
 
-        word_count++;
+        if (word_length) word_count++;
 
         if (shift == line_length) break;
     }
@@ -139,21 +172,25 @@ static char** code_split(FILE* file, int* num_of_lines) {
         if (line_count >= current_max_num_of_lines) {
             realloc_lines(lines, &current_max_num_of_lines, line_count);
         }
-        lines[line_count] = (char*) calloc(sizeof(char), code_string_max_len);
+        char* line = (char*) calloc(sizeof(char), code_string_max_len);
+        fgets(line, code_string_max_len, file);
 
-        fgets(lines[line_count], code_string_max_len, file);
-        line_count++;
+        if (is_not_empty(line)) {
+            lines[line_count] = line;
+            line_count++;
+        }
     }
     *num_of_lines = line_count;
     return lines;
 }
 
 
-// static void tokens_output(Token* tokens, int num_of_tokens) {
-//     for (int i = 0; i < num_of_tokens; i++) {
-//         puts(tokens[i].name);
-//     }
-// }
+static void tokens_output(Token* tokens, int num_of_tokens) {
+    for (int i = 0; i < num_of_tokens; i++) {
+        printf("type %c    ", tokens[i].type);
+        puts(*tokens[i].name);
+    }
+}
 
 
 
@@ -200,9 +237,20 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
             //     .name = words[i],
             //     .number = (i == 1) ? str_to_int(words[i]) : 0
             // }) suk(((((((
+            
+            if (i == 0) {
+                int length = strlen(words[0]);
+                if (words[0][length - 1] == ':') {
+                    tokens[token_id].type = LABEL; 
+                    words[0] = get_lable_name(words[0]);
+                    }
+                else
+                    tokens[token_id].type = IDENT_COMMAND;
+            }     
+            else 
+                tokens[token_id].type = (strcmp(words[0], "jump") == 0 ) ? JUMP_TO : NUMBER;
 
-            tokens[token_id].type = (i == 0) ? IDENT_COMMAND : NUMBER;
-            tokens[token_id].name = words[i]; 
+            tokens[token_id].name = &words[i]; 
             tokens[token_id].number = (i == 1) ? str_to_int(words[i]) : 0;
             
             token_id++;
@@ -215,7 +263,7 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
     *num_of_tokens = token_id;
 
     //printf("num_of_tokens = %d\n", token_id);
-    //tokens_output(tokens, token_id);
+    tokens_output(tokens, token_id);
     return OK;
 
 }
