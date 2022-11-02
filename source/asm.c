@@ -13,10 +13,10 @@ status_t assemble(AsmData* data) {
     int label_id = 0;
 
     status_t status = tokenize(&tokens, &num_of_tokens, *(data->in_file_name));
-    printf("st %d\n", status);  
+    //printf("st %d\n", status);  
     if (status != OK) return status;
 
-    int* token_sequence = (int*) calloc(sizeof(int), num_of_tokens);
+    int* token_sequence = (int*) calloc(sizeof(int), num_of_tokens); // ?
 
     for (int i = 0; i < num_of_tokens; i++)     
         if (tokens[i].type == LABEL) 
@@ -25,12 +25,29 @@ status_t assemble(AsmData* data) {
     Label* labels = (Label*) calloc(sizeof(Label), num_of_labels);
 
 
-    FILE* file_out = fopen(*(data->out_file_name), "w");
+    FILE* file_out = fopen(*(data->out_file_name), "w"); // ?
 
+    // TODO: this is the main i dream of:
+    // int main() {
+    //     const char* input_text = read_file(text);
 
-    for (int i = 0; i < num_of_tokens; i++) {
+    //     array(token) tokens = tokenize(input_text);
+
+    //     array(instruction)
+    //         instructions = assemble(tokens);
+
+    //     write_binary(instructions, output_file);
+    // }
+
+    // AssembleContext ctx = {};
+    // assemble(ctx);
+    // assemble(ctx);
+
+    for (int i = 0; i < num_of_tokens; i++) { 
 
         char* token_name = *tokens[i].name;
+
+        puts(token_name);
 
         if (tokens[i].type == NUMBER) {
 
@@ -47,7 +64,6 @@ status_t assemble(AsmData* data) {
             token_sequence[i] = SET_LABEL;
 
         }
-//AAAAAAAAAAAAAA 
 
         else if (!strcmp(token_name, "push")) {
             token_sequence[i] = PUSH;
@@ -79,12 +95,11 @@ status_t assemble(AsmData* data) {
         else            
             token_sequence[i] = ERROR;
 
-//AAAAAAAAAA
+        //AAAAAAAAAA
 
     }
 
-    int jump_count;
-    for (int i = 0; i < num_of_tokens; i++) {
+    for (int i = 0; i < num_of_tokens; i++) { // TODO: link labels
 
         if (!strcmp(*(tokens[i].name), "jump")) {
 
@@ -110,6 +125,7 @@ status_t assemble(AsmData* data) {
             token_sequence[i+1] = labels[label_id].offset;
         }
     }
+
     //FILE* bin_file_out = fopen("bin_out.txt", "w");
 
 

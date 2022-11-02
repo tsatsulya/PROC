@@ -247,7 +247,7 @@ stack_status stack_init(Stack* stack, size_t length) {
    
     debug_msg(INFO_, printf("___init_stack: %p\n", stack));
     debug_msg(INFO_, printf("___init_data: %p\n", stack->data));
-    
+
     set_canaries(stack);
 
     stack_rehash(stack);

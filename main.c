@@ -16,6 +16,7 @@ int main() {
     printf(" status %d\n", status);
     Processor proc;
     cpu_load(&proc, "test_out.txt");
+    puts("a");
     cpu_exec(&proc);
 
     return 0;

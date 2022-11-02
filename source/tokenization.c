@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// TODO: chm... where is do...while?
 #define ERROR_(COND, TO_RET)                                    \
     if (COND) {                                                 \
         return TO_RET;                                          \
@@ -11,32 +12,38 @@
 
 
 
-static const char* commands[]  = {"push", "add", "sub", "mul", "div", "out", "htl", "jump"};
-static const int num_of_commands = 8;
-
 
 static bool is_not_empty(char* line) {
 
-    if (strlen(line) <= 1) return false;
+    if (strlen(line) <= 1) return false; // TODO: what if "a"
 
     for (int i = 0; ; i++) {
-        if (line[i] == '\0' && line[i] == '\n') break;
-        if (line[i] != 32) return true;
+        if (line[i] == '\0' || line[i] == '\n') break;
+        if (line[i] != ' ') return true;
+        // TODO:       ^~ just use ' ', it's the same thing 
     }
     return false;
 }
 
-static char* get_lable_name(char* code_lable) {
-    int length = strlen(code_lable);
-    char* lable_name = (char*) calloc(1, length-1);
-    strncpy(lable_name, code_lable, length - 1);
+// TODO: I would rename to highlight memory allocation (get usually means that it's fast and with no side effects)
+static char* get_label_name(char* code_label) { // TODO: is this strdup?
 
-    return lable_name;
+    // TODO: you could use: (ochevidno, ti chmonya)
+    //  substring label = { code_label,  }
+
+    int length = strlen(code_label);
+    char* label_name = (char*) calloc(1, length-1);
+    strncpy(label_name, code_label, length - 1);
+
+    return label_name;
 }
 
-static int get_word(char** word_, int* word_length, int start, const char *code) {   
+// TODO: its extremly expensive to allocate every word, don't do this to me chm...
+static int get_word(char** word_, int* word_length, int start, const char *code) {  
+    // get_word, first question i get in my mind: what word?
+    // So get_next_word... (i this case it's still bad, because get_*) 
 
-    for (; *(code + start) == ' '; start++) {}
+    for (; *(code + start) == ' '; start++) {} // TODO: chm...
 
     int shift = start;
     char* word = (char*) calloc(sizeof(char), input_format_max_len);
@@ -52,56 +59,14 @@ static int get_word(char** word_, int* word_length, int start, const char *code)
     // puts(word);
    
     *word_length = shift - start;
+    puts(word);
     *word_ = word;
     return shift++;
 }
 
 
-static bool is_command(char* string) {
-
-    int length = strlen(string);
-    if (string[length-1] == ':') 
-        return true;
-
-    for (int i = 0; i < num_of_commands; i++) {
-        if (strcmp(string, commands[i]) == 0) 
-            return true; 
-    }
-    return false;
-}
-
-static status_t check_command(char** words, int word_count) {
-
-
-    if (word_count > 2) return INCORRECT_INPUT;
-
-    if (is_command(words[0])) {
-
-        bool is_push = !strcmp(words[0], "push");
-        bool args = (word_count == 1) ? false : string_is_number(words[1]);
-
-        bool is_jump = !strcmp(words[0], "jump");
-        bool label = (word_count == 2); //number?
-
-        if (!(is_push ^ args)) 
-            return OK;
-
-        else if (is_jump && label) 
-            return OK;         
-        
-        else 
-            return INCORRECT_INPUT;
-        
-    }
-    else {
-        return INCORRECT_INPUT;
-    }
-     
-}
-
-
+// TODO: make this part of a generic array implementation
 static status_t realloc_lines(char** lines, int* current_num_of_lines,  int line) {
-
     *current_num_of_lines *= 2;
     char** implemented_lines = (char**) realloc(lines, sizeof(char*) * (*current_num_of_lines));
 
@@ -115,6 +80,7 @@ static status_t realloc_lines(char** lines, int* current_num_of_lines,  int line
     return OK;
 }
 
+// TODO: join with upper function (also same...)
 static status_t realloc_tokens(Token* tokens, int* current_num_of_tokens,  int token_id) {
 
     *current_num_of_tokens *= 2;
@@ -123,21 +89,18 @@ static status_t realloc_tokens(Token* tokens, int* current_num_of_tokens,  int t
     ERROR_(!implemented_tokens, MEM_ERR);
     
     tokens = implemented_tokens;
-
-    for (int new_token_id = token_id; new_token_id < *current_num_of_tokens; new_token_id++)
-        tokens[new_token_id] = POISON;
     
     return OK;
 }
 
-
-static char** string_split(char* code, int* num_of_words) {
+// TODO: move to other library for strings
+static char** string_split(char* code, int* num_of_words) { // TODO: split_to(by)_words?
 
     int current_max_words_in_line = words_in_line;
 
-    char** words = (char**) calloc(sizeof(char*), 2);
+    char** words = (char**) calloc(sizeof(char*), 2); // TODO: chm... what is 2?!
 
-    int shift = -1;
+    int shift = 0; // TODO: is this for loop?
     int word_count = 0;
     int line_length = strlen(code);
 
@@ -163,10 +126,15 @@ static char** string_split(char* code, int* num_of_words) {
 
 static char** code_split(FILE* file, int* num_of_lines) { 
 
+    // TODO: I recommend to read whole file in memory
+
     char** lines = (char**) calloc(sizeof(char*), max_num_of_lines);
 
     int current_max_num_of_lines = max_num_of_lines;
     int line_count = 0;
+
+    // TODO: much better to just calculate number of lines before split
+
     while (!feof(file)) {
 
         if (line_count >= current_max_num_of_lines) {
@@ -185,7 +153,7 @@ static char** code_split(FILE* file, int* num_of_lines) {
 }
 
 
-static void tokens_output(Token* tokens, int num_of_tokens) {
+static void tokens_output(Token* tokens, int num_of_tokens) { // TODO: naaaame print_tokens
     for (int i = 0; i < num_of_tokens; i++) {
         printf("type %c    ", tokens[i].type);
         puts(*tokens[i].name);
@@ -196,13 +164,13 @@ static void tokens_output(Token* tokens, int num_of_tokens) {
 
 status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const code_file_name) {
 
-    ERROR_(!token_sequence, BAD_PTR); //is_bad_ptr() ?
-    ERROR_(!num_of_tokens, BAD_PTR);
-    ERROR_(!code_file_name, BAD_PTR);
+    ERROR_(is_bad_ptr(token_sequence), BAD_PTR); //is_bad_ptr() ?
+    ERROR_(is_bad_ptr(num_of_tokens), BAD_PTR); // TODO: it's more of an assert
+    ERROR_(is_bad_ptr((void*)code_file_name), BAD_PTR);
     
     FILE* code_file = fopen(code_file_name, "rb");
 
-    ERROR_(code_file == NULL, FILE_ERR);
+    ERROR_(code_file == NULL, FILE_ERR); //
 
     int num_of_code_lines = 0;
     char** code_lines = code_split(code_file, &num_of_code_lines);
@@ -210,12 +178,17 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
     fclose(code_file);
 
     Token* tokens = (Token*) calloc(sizeof(Token), start_max_num_of_tokens);
+    //                                                   ^~~ initial capacity? TODO: <
 
-    ERROR_(!tokens, MEM_ERR);
+    ERROR_(is_bad_ptr(tokens), MEM_ERR);
 
-    for (int token_id = 0; token_id < start_max_num_of_tokens; token_id++)
-        tokens[token_id] = POISON;
 
+    // char *buffer = read_file(name);
+    // line *lines = split_to_lines(buffer);
+    // for (...) {
+    //    stack_push_back(&tokens, ...); // realloc is hidden inside
+    //
+    // }
 
     int current_tokens_size = start_max_num_of_tokens;
     int token_id = 0;
@@ -225,13 +198,10 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
         int num_of_words = 0;
         char** words = string_split(code_lines[line], &num_of_words);
 
-       // ERROR_(check_command(words, num_of_words), INCORRECT_INPUT);
-
         for (int i = 0; i < num_of_words; i++) {
 
             if (token_id >= current_tokens_size) 
-                realloc_tokens(tokens, &current_tokens_size, token_id);
-            
+                realloc_tokens(tokens, &current_tokens_size, token_id); // TODO: this is a red flag, low level code interleaved with higher level
             if (i == 0) {
 
                 int length = strlen(words[0]);
@@ -239,17 +209,15 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
                 if (words[0][length - 1] == ':') {
 
                     tokens[token_id].type = LABEL; 
-                    words[0] = get_lable_name(words[0]);
+                    words[0] = get_label_name(words[0]);
                 }
                 else {
-                    if (is_command(words[0]))   
-                        tokens[token_id].type = IDENT_COMMAND;
-                    else 
-                        tokens[token_id].type = UNDF_TYPE;
+                    tokens[token_id].type = COMMAND; // TODO: why abbrivation
                 }
             }     
             else 
-                tokens[token_id].type = (strcmp(words[0], "jump") == 0 ) ? JUMP_TO : NUMBER;
+                tokens[token_id].type = (strcmp(words[0], "jump") == 0 ) ? JUMP_TO : NUMBER; // 
+
 
             tokens[token_id].name = &words[i]; 
             tokens[token_id].number = (i == 1) ? str_to_int(words[i]) : 0;
@@ -263,8 +231,7 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
     *token_sequence = tokens;
     *num_of_tokens = token_id;
 
-    //printf("num_of_tokens = %d\n", token_id);
-    tokens_output(tokens, token_id);
+    // tokens_output(tokens, token_id);
     return OK;
 
 }

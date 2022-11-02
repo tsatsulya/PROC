@@ -5,11 +5,11 @@
 
 typedef enum TokenType {
     NUMBER    = 'N',
-    IDENT_COMMAND  = 'I',
-    UNDF_TYPE = 'U',
+    COMMAND  = 'I', 
     LABEL = 'L', 
-    JUMP_TO = 'J'
+    JUMP_TO = 'J' // TODO: I wouldn't extract jump in different file
 } TokenType;
+
 
 typedef struct Token {
     TokenType type;
@@ -17,7 +17,6 @@ typedef struct Token {
     int number; 
 } Token;
 
-static const Token POISON = {UNDF_TYPE, NULL, 0};
 
 
 static const int code_string_max_len = 32;

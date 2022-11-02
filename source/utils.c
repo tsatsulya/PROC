@@ -1,6 +1,9 @@
 #include "utils.h"
 #include "string.h"
 #include "stdio.h"
+
+// TODO: utils is a bit low-effort
+
 long long int pow_(int x, int power) {
     long long int result = 1;
     for (int y = 0; y < power; y++) {
@@ -8,7 +11,6 @@ long long int pow_(int x, int power) {
     }
     return result;
 }
-
 
 bool string_is_number(const char* string) {
 
@@ -24,11 +26,8 @@ bool string_is_number(const char* string) {
     return true;
 }
 
-int str_to_int(const char* string) {
+int str_to_int(const char* string) { // TODO: bool* is_correct? (also see strtol)
 
-    bool is_number = string_is_number(string);
-
-    if (!is_number) return false;
     int number = 0;
     int mult = 1;
     int length = (int)strlen(string); 
@@ -40,6 +39,12 @@ int str_to_int(const char* string) {
         }
         int n = string[i];
         number += (n - 48) * (int)pow_(10, length - i-1);
+        // TODO:       ^~ is this '0'?...
     }
     return number * mult;
+}
+
+bool is_bad_ptr(void* ptr) {
+    if ((long int)ptr < 0x0000ffff) return true;
+    return false;
 }

@@ -2,9 +2,32 @@
 #include "stdlib.h"
 #include "string.h"
 
-status_t cpu_load(Processor* cpu, const char* const in_file_name) {
+//ommands.inc
 
-    // if (isBadPtr (CPU) || isBadPtr (in_file_name)) return BAD_PTR;
+// DEF_CMD(0, JMP)
+// DEF_CMD(1, RET)
+
+// #undef DEF_CMD
+
+// // ...
+
+// const char* get_name(int command_id) {
+
+//     switch (command_id) {
+
+//         #define DEF_CMD(id, name, ) 
+//             case id:              
+//                 return #name;
+            
+//         #include "commands.inc"
+
+//         ;
+//     }
+// }
+
+status_t cpu_load(Processor* cpu, const char* in_file_name) {
+
+    if (is_bad_ptr(cpu) || is_bad_ptr((void*)in_file_name)) return BAD_PTR;
 
     FILE* in_file = fopen(in_file_name, "rb");
     if (in_file == NULL)
@@ -13,7 +36,7 @@ status_t cpu_load(Processor* cpu, const char* const in_file_name) {
     int num_of_commands = 0;
     int s;
     
-    while ((fscanf(in_file, "%d", &s)!=EOF))
+    while ((fscanf(in_file, "%d", &s) != EOF))
         num_of_commands+=1;
     rewind(in_file);
     
@@ -24,13 +47,10 @@ status_t cpu_load(Processor* cpu, const char* const in_file_name) {
     for(int i = 0; i < cpu->code_size; i++) {
         fscanf(in_file, "%d", &code[i]);
     }
+
     fclose(in_file);
 
     cpu->code = code;
-    Stack stk;
-    stack_init(&stk, 5); 
-    cpu->cpu_stack = &stk;   
-
     return OK;
 }
 
@@ -43,8 +63,26 @@ status_t cpu_exec(Processor* cpu) {
     int ax = 0;
     for (int i = 0; i < cpu->code_size; i++) {
 
-        //printf("cpu i %d\n", i);
+        //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
         int command_id = cpu->code[i];
+
+
+        // #define foo(x) #x
+
+        // foo(1) //=> "1"
+        // foo(x) //=> "x"
+
+        // #define DEF_CMD(id, name, code_to_run, assemble, disassemble) 
+        //     if (command_id == id) {                                   
+        //         code_to_run                         
+        //     } else                                  
+
+
+        // #include "commands.inc"
+
+        // {
+        //     assert(false && "Illegal command!");
+        // } 
 
         if (command_id == PUSH) {
             stack_push(&cpu_stack, cpu->code[i+1]);
@@ -71,6 +109,9 @@ status_t cpu_exec(Processor* cpu) {
                 ax--;
             }
         }
+
+        //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
     }
     //HLT!!!!!!!!!!!!!!!
     return OK;

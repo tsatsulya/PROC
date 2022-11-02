@@ -13,7 +13,7 @@ typedef enum status_t {
 long long int pow_(int x, int power);
 bool string_is_number(const char* string);
 int str_to_int(const char* string);
-
+bool is_bad_ptr(void* ptr);
 
 
 

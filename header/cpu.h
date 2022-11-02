@@ -19,5 +19,5 @@ typedef struct Processor {
 } Processor;
 
 
-status_t cpu_load(Processor* CPU, const char* const in_file_name);
+status_t cpu_load(Processor* CPU, const char* in_file_name);
 status_t cpu_exec(Processor* cpu);
