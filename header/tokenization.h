@@ -5,7 +5,7 @@
 
 typedef enum TokenType {
     NUMBER    = 'N',
-    COMMAND  = 'I', 
+    COMMAND  = 'I', // TODO: I would list all possible commands
     LABEL = 'L', 
     JUMP_TO = 'J' // TODO: I wouldn't extract jump in different file
 } TokenType;
@@ -16,7 +16,6 @@ typedef struct Token {
     char** name;
     int number; 
 } Token;
-
 
 
 static const int code_string_max_len = 32;
