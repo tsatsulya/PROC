@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "strings.h"
 #include "arrays.h"
+#include "strings.h"
+
 
 define_array(Line);
 define_array(Token);
@@ -88,11 +89,13 @@ static status_t realloc_tokens(Token* tokens, int* current_num_of_tokens) {
 }
 
 
-static char** string_split(char* code, int* num_of_words) {
+static char** string_split(char* code, int* num_of_words, array(Line)* wordds_) {
 
     int current_max_words_in_line = words_in_line;
 
     char** words = (char**) calloc(sizeof(char*), 2);
+
+    array(Line) words_ = create_array(Line, 0);
 
     int shift = -1;
     int word_count = 0;
@@ -110,11 +113,22 @@ static char** string_split(char* code, int* num_of_words) {
 
         shift = get_word(&words[word_count], &word_length, shift+1, code);
 
-        if (word_length) word_count++;
+
+        if (word_length) {
+            word_count++;
+            Line ll = {
+                .first_symbol = code + shift - word_length,
+                .length = word_length
+            };
+
+            push_element(Line, words_, ll);
+        }
 
         if (shift == line_length) break;
     }
+    // print_lines(words_.buffer, words_.size);
     *num_of_words = word_count;
+    *wordds_ = words_;
     return words;
 }
 
@@ -183,6 +197,7 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
     fclose(code_file);
 
     Token* tokens = (Token*) calloc(sizeof(Token), start_max_num_of_tokens);
+    array(Token) tokens_ = create_array(Token, start_max_num_of_tokens);
 
     ERROR_(!tokens, MEM_ERR);
 
@@ -192,10 +207,15 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
     for (int line = 0; line < num_of_code_lines; line++) {
 
         int num_of_words = 0;
-        char** words = string_split(code_lines[line], &num_of_words);
 
+        array(Line) words_;
+        char** words = string_split(code_lines[line], &num_of_words, &words_);
 
         for (int i = 0; i < num_of_words; i++) {
+
+            TokenType type;
+            // char** name;
+            // int number;
 
             if (token_id >= current_tokens_size) 
                 realloc_tokens(tokens, &current_tokens_size);
@@ -204,17 +224,24 @@ status_t tokenize(Token** token_sequence, int* num_of_tokens, const char* const 
 
                 int length = strlen(words[0]);
 
+                if (*(words_.buffer[0].first_symbol + words_.buffer[0].length - 1) == ':') puts("YESSSSSSSSSSSS"); 
+
                 if (words[0][length - 1] == ':') {
 
                     tokens[token_id].type = LABEL; 
+                    type = LABEL;
                     words[0] = get_lable_name(words[0]);
                 }
                 else {
                     tokens[token_id].type = COMMAND;
+                    type = COMMAND;
                 }
             }     
-            else 
+            else {
                 tokens[token_id].type = (strcmp(words[0], "jump") == 0 ) ? JUMP_TO : NUMBER;
+                type = (linecmp(words_.buffer[0], "jump") == 0) ? JUMP_TO : NUMBER;
+
+            }
 
             tokens[token_id].name = &words[i]; 
             tokens[token_id].number = (i == 1) ? str_to_int(words[i]) : 0;

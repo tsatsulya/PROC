@@ -26,7 +26,6 @@
 } while(0)
 
 
-
 #define push_element(type, array, element) do {             \
     if (array.size == array.capacity)                       \
         recalloc_array(type, array);                        \

@@ -1,9 +1,9 @@
 DUMP was called from source/stack.c :: stack_change_length :: 158
-The stack address: [0x7ffc2db58dd0]
-The data begining address: [0x1ec48c0]
+The stack address: [0x7ffd5b1a78b0]
+The data begining address: [0x1027a70]
 capacity: 20
 num of elements: -1
 StackOverflow!
-Stack hash: 719284368
+Stack hash: 18446744071882587789
 left_canary: dead000
 right_canary: 0
