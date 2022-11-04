@@ -1,7 +1,10 @@
 #pragma once
 
+#include "arrays.h"
 #include "utils.h"
 #include "stdio.h"
+#include "strings.h"
+
 
 typedef enum TokenType {
     NUMBER    = 'N',
@@ -13,9 +16,10 @@ typedef enum TokenType {
 
 typedef struct Token {
     TokenType type;
-    char** name;
+    Line name;
     int number; 
 } Token;
+define_array(Token);
 
 
 static const int code_string_max_len = 32;
@@ -24,5 +28,5 @@ static const int words_in_line = 2;
 static const int max_num_of_lines = 20;
 static const int start_max_num_of_tokens = max_num_of_lines * 2;
 
-status_t tokenize(Token** tokens, int* num_of_tokens, const char* const code_file_name);
 
+status_t tokenize(array(Token)* token_sequence, const char* code_file_name);

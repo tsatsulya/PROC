@@ -26,23 +26,7 @@ bool string_is_number(const char* string) {
     return true;
 }
 
-int str_to_int(const char* string) { // TODO: bool* is_correct? (also see strtol)
 
-    int number = 0;
-    int mult = 1;
-    int length = (int)strlen(string); 
-
-    for (int i = 0; i < length; i++) {
-        if (i == 0 && string[i] == '-') {
-            mult = -1;
-            continue;
-        }
-        int n = string[i];
-        number += (n - 48) * (int)pow_(10, length - i-1);
-        // TODO:       ^~ is this '0'?...
-    }
-    return number * mult;
-}
 
 bool is_bad_ptr(void* ptr) {
     if ((long int)ptr < 0x0000ffff) return true;

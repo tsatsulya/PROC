@@ -2,7 +2,7 @@
 
 #include "utils.h"
 #include "tokenization.h"
-
+#include "arrays.h"
 // TODO: chick enumchick
 
 static const int SET_LABEL  = 0x1abe1;
@@ -18,38 +18,20 @@ static const int ERROR      = -1;
 
 
 typedef struct Label {
-    char** name;
+    Line name;
     int offset;
 
 } Label;
 
+define_array(Label);
 
 
-// #define array(type) array_##type
-
-// #define define_array(type) /
-//     struct array(type) {   /
-//         type* buffer;      /
-//         size_t length;     /
-//     };
-
-// define_array(int)
-
-// void foo() {
-
-//     array(int) new_array = create_array(int, 10);
-// }
-
-
-// struct label_array; //
 
 typedef struct AsmData { // TODO: maybe asm_context?
     char** in_file_name;
     char** out_file_name;
-    Label* labels;       // TODO: array?
-    size_t num_of_labels;
-    Token* tokens;       // TODO: array?
-    size_t num_of_tokens;
+    array(Label) labels;       // TODO: array?
+    array(Token) tokens;       // TODO: array?
 
 } AsmData;
 

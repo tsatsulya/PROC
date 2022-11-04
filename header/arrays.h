@@ -6,8 +6,8 @@
     typedef struct array(type) {        \
         type* buffer;                   \
         size_t size;                    \
-        size_t capacity                 \
-    } array(type)
+        size_t capacity;                 \
+    } array(type);
 
 
 
