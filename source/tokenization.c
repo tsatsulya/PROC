@@ -11,7 +11,7 @@
     if (COND) {                                                 \
         return TO_RET;                                          \
     }
-#define print(i) printf("%d\n", i);
+#define print(i) printf("%ld\n", i);
 
 static bool is_not_empty(char* line) {
 
@@ -23,14 +23,6 @@ static bool is_not_empty(char* line) {
     }
     return false;
 }
-
-// static char* get_lable_name(char* code_lable) {
-//     int length = strlen(code_lable);
-//     char* lable_name = (char*) calloc(1, length-1);
-//     strncpy(lable_name, code_lable, length - 1);
-
-//     return lable_name;
-// }
 
 static int get_word(Line* word, int start,  char* code) {   
 
@@ -44,7 +36,6 @@ static int get_word(Line* word, int start,  char* code) {
         }
     }
     
-    printf("ppp %p\n", word);
     word->length = shift - start;
     word->first_symbol = code + start;
     return shift++;
@@ -53,30 +44,29 @@ static int get_word(Line* word, int start,  char* code) {
 
 
 
-static array(Line)* string_split(char* code) {
+static array(Line) string_split(char* code) {
 
     array(Line) words = create_array(Line, 0);
 
     int shift = -1;
     int word_count = 0;
     int line_length = strlen(code);
+    Line word;
 
     while (code[shift+1] != '\n') {
-        print(shift);
-        shift = get_word(&words.buffer[word_count], shift+1, code);
-        print(shift);
-        puts_line(words.buffer[word_count]);
+    
+        shift = get_word(&word, shift+1, code);
 
-        if (words.buffer[word_count].length) {
-
+        if (word.length) {
+            push_element(Line, words, word);
             word_count++;
         }
 
         if (shift == line_length) break;
     }
-    // print_lines(words_.buffer, words_.size);
+
     words.size = word_count;
-    return &words;
+    return words;
 }   
 
 static array(Line) code_split(FILE* file) { 
@@ -89,11 +79,6 @@ static array(Line) code_split(FILE* file) {
         char* line_of_code = (char*) calloc(sizeof(char), code_string_max_len);
 
         fgets(line_of_code, code_string_max_len, file);
-        
-        Line ll = (Line) {
-            .first_symbol = line_of_code,
-            .length = strlen(line_of_code)
-        };
 
         // printf("%s\n\n", ll.first_symbol);
 
@@ -103,18 +88,19 @@ static array(Line) code_split(FILE* file) {
         }
     }
     lines.size = line_count;
-    //printf("size %d\n", lines.size);
-    //print_lines(lines);
     return lines;
 }
 
 
-// static void tokens_output(Token* tokens, int num_of_tokens) {
-//     for (int i = 0; i < num_of_tokens; i++) {
-//         printf("type %c    ", tokens[i].type);
-//         puts_line(tokens[i].name);
-//     }
-// }
+static void tokens_output(array(Token) tokens) {
+    for (long unsigned i = 0; i < tokens.size; i++) {
+        printf("type: %c\n", tokens.buffer[i].type);
+        printf("name:");
+        puts_line(tokens.buffer[i].name);
+        printf("number: %d\n", tokens.buffer[i].number);
+        puts("");
+    }
+}
 
 
 
@@ -131,8 +117,6 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name) {
 
     fclose(code_file);
 
-    puts("------------------------------------------------------------------------------------------");
-    print_lines(code_lines);
     array(Token) tokens = create_array(Token, start_max_num_of_tokens);
 
     int token_id = 0;
@@ -141,16 +125,12 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name) {
 
     for (int line = 0; line < num_of_code_lines; line++) {
 
-        int num_of_words = 0;
 
-        array(Line) words = *string_split(code_lines.buffer[line].first_symbol);
-        puts("------------------------------------------------------------------------------------------");
-        print_lines(words);
-        for (int i = 0; i < num_of_words; i++) {
+        array(Line) words = string_split(code_lines.buffer[line].first_symbol);
+        // print_lines(words);
+        for (long unsigned i = 0; i < words.size; i++) {
 
             TokenType type;
-            // char** name;
-            // int number;
 
             if (i == 0) {
 
@@ -163,7 +143,7 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name) {
                 }
             }     
             else {
-                type = (linecmp(words.buffer[0], "jump") == 0) ? JUMP_TO : NUMBER;
+                type = (linecmp(words.buffer[0], "jump") == 0) ? COMMAND : NUMBER;
             }
 
             tokens.buffer[token_id].type = type; 
@@ -178,8 +158,7 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name) {
     tokens.size = token_id;
     *token_sequence = tokens;
 
-    //printf("num_of_tokens = %d\n", token_id);
-    // tokens_output(tokens, token_id);
+    //tokens_output(tokens);
     return OK;
 
 }

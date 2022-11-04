@@ -5,41 +5,62 @@
 
 
 
-DEF_CMD (PUSH, "push", 
+DEF_CMD (PUSH, "push", 1,
 {    
-    token_sequence.buffer[i] = PUSH;
+    Token argument = tokens.buffer[i+1]; 
+    push_element(int, token_sequence, PUSH);
+    if (argument.type == NUMBER) 
+        push_element(int, token_sequence, argument.number);
+    else 
+        assert(false && "incorrect input!");
+    i++;
 }, {})
 
 
-DEF_CMD (ADD, "add", 
+DEF_CMD (ADD, "add", 0,
 {    
-    token_sequence.buffer[i] = ADD;
+    push_element(int, token_sequence, ADD);
 }, {})
 
 
-DEF_CMD (MUL, "mul", 
+DEF_CMD (MUL, "mul", 0,
 {    
-    token_sequence.buffer[i] = MUL;
+    push_element(int, token_sequence, MUL);
+
 }, {})
 
 
-DEF_CMD (SUB, "sub", 
+DEF_CMD (SUB, "sub", 0,
 {    
-    token_sequence.buffer[i] = SUB;
+    push_element(int, token_sequence, SUB);
+
 }, {})
 
 
-DEF_CMD (DIV, "div", 
+DEF_CMD (DIV, "div", 0,
 {    
-    token_sequence.buffer[i] = DIV;
+    push_element(int, token_sequence, DIV);
+    
 }, {})
 
 
-DEF_CMD (OUT, "out", 
+DEF_CMD (OUT, "out", 0,
 {    
-    token_sequence.buffer[i] = PUSH;
+    push_element(int, token_sequence, OUT);
+
 }, {})
 
+DEF_CMD (JUMP, "jump", 0,
+{    
+    Token argument = tokens.buffer[i+1]; 
+    push_element(int, token_sequence, JUMP);
+    if (argument.type == COMMAND) 
+        push_element(int, token_sequence, 0);
+    else 
+        assert(false && "incorrect input!");
+    i++;
+
+}, {})
 
 #undef DEF_CMD
 

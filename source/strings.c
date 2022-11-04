@@ -7,13 +7,15 @@
 
 void print_lines(array(Line) array) {
     // printf("sizeee %d\n", array.size);
-    for (int i = 0; i < array.size; i++) {
-        puts(array.buffer[i].first_symbol);
+    for (long unsigned i = 0; i < array.size; i++) {
+        for (long unsigned j = 0; j < array.buffer[i].length; j++ )
+            printf("%c", *(array.buffer[i].first_symbol + j));
+        puts("");
     }
 }
 
 void puts_line(Line string) {
-    for (int j = 0; (long unsigned)j < string.length; j++) {
+    for (long unsigned j = 0; j < string.length; j++) {
         printf("%c", *(string.first_symbol + j));
     }
     puts("");
@@ -30,6 +32,17 @@ int linecmp(Line string1, char* string2) {
         if (dif != 0) return dif;
     }
     return string1.length - length2;
+}
+
+int linescmp(Line string1, Line string2) {
+    
+    if (string1.length - string2.length) return string1.length - string2.length;
+
+    for (long unsigned i = 0; i < string1.length; i++) {
+        int dif = string1.first_symbol[i] - string2.first_symbol[i];
+        if (dif != 0) return dif;
+    }
+    return 0;
 }
 
 int str_to_int(Line string) { // TODO: bool* is_correct? (also see strtol)
