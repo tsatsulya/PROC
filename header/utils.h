@@ -1,6 +1,7 @@
 #pragma once
-
 #include <stdbool.h>
+
+
 typedef enum status_t {
     OK = 0              ,
     MEM_ERR = -4096     ,

@@ -3,12 +3,9 @@
 #include "utils.h"
 #include "asm.h"
 #include "stack.h" 
-
-
 typedef struct Processor {
 
-    int* code;
-    int code_size;
+    array(long) code;
 
     Stack* cpu_stack;
     int RAM[0x10000];
@@ -19,5 +16,5 @@ typedef struct Processor {
 } Processor;
 
 
-status_t cpu_load(Processor* CPU, const char* in_file_name);
 status_t cpu_exec(Processor* cpu);
+status_t cpu_load(Processor* cpu, const char* in_file_name);

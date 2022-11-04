@@ -1,6 +1,8 @@
 #include "cpu.h"
 #include "stdlib.h"
 #include "string.h"
+#include "assert.h"
+// define_array(int);
 
 //ommands.inc
 
@@ -36,20 +38,19 @@ status_t cpu_load(Processor* cpu, const char* in_file_name) {
     int num_of_commands = 0;
     int s;
     
-    while ((fscanf(in_file, "%d", &s) != EOF))
-        num_of_commands+=1;
-    rewind(in_file);
-    
-    cpu->code_size = num_of_commands;
+    array(long) code = create_array(long, 16);
 
-    int *code = (int*) calloc(cpu->code_size, sizeof(int));  
+    size_t shift = 0;
 
-    for(int i = 0; i < cpu->code_size; i++) {
-        fscanf(in_file, "%d", &code[i]);
+    int width = sizeof(int);
+
+    while (fread(&s, sizeof(int), 1, in_file)) {
+        push_element(long, code, s);
+        // printf("element %d\n", s);
+        fseek(in_file, (++shift)*width, SEEK_SET);
     }
-
+    rewind(in_file);
     fclose(in_file);
-
     cpu->code = code;
     return OK;
 }
@@ -60,60 +61,24 @@ status_t cpu_exec(Processor* cpu) {
 
     Stack cpu_stack;
     stack_init(&cpu_stack, 5);
-    int ax = 0;
-    for (int i = 0; i < cpu->code_size; i++) {
+    printf("size %ld\n\n\n\n", cpu->code.size);
 
-        //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        int command_id = cpu->code[i];
+    for (long unsigned i = 0; i < cpu->code.size; i++) {
+        int command_id = cpu->code.buffer[i];
+        if (command_id == SET_LABEL) continue;
 
-
-        // #define foo(x) #x
-
-        // foo(1) //=> "1"
-        // foo(x) //=> "x"
-
-        // #define DEF_CMD(id, name, code_to_run, assemble, disassemble) 
-        //     if (command_id == id) {                                   
-        //         code_to_run                         
-        //     } else                                  
+        #define DEF_CMD(id, name, arg, assemble, code_to_run) \
+            if (command_id == id) {                           \
+                code_to_run                         \
+            } else                                  \
 
 
-        // #include "commands.inc"
+        #include "commands.inc"
 
-        // {
-        //     assert(false && "Illegal command!");
-        // } 
-
-        if (command_id == PUSH) {
-            stack_push(&cpu_stack, cpu->code[i+1]);
-        }
-        else if (command_id == ADD) {
-            stack_push(&cpu_stack, stack_pop(&cpu_stack) + stack_pop(&cpu_stack)); //1 element?
-        }
-        else if (command_id == SUB) {
-            stack_push(&cpu_stack, (-1) * stack_pop(&cpu_stack) + stack_pop(&cpu_stack)); //
-        }
-        else if (command_id == MUL) {
-            stack_push(&cpu_stack, stack_pop(&cpu_stack) * stack_pop(&cpu_stack)); //
-        }
-        else if (command_id == DIV) {
-            stack_push(&cpu_stack, 1 / stack_pop(&cpu_stack) * stack_pop(&cpu_stack)); //
-        }
-        else if (command_id == OUT) {
-            printf("%d\n", stack_get_last_element(&cpu_stack));
-        }
-        else if (command_id == JUMP) {
-            if (ax) {
-                //puts("jump");
-                i = cpu->code[i+1];
-                ax--;
-            }
-        }
-
-        //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-
+        {
+            assert(false && "Illegal command!");
+        } 
     }
-    //HLT!!!!!!!!!!!!!!!
     return OK;
 }
 

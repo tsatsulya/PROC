@@ -1,9 +1,11 @@
-DUMP was called from source/stack.c :: stack_change_length :: 158
-The stack address: [0x7fff2c4974d0]
-The data begining address: [0x608000000120]
-capacity: 20
-num of elements: -1
-StackOverflow!
-Stack hash: 18446744073680813730
-left_canary: dead000
-right_canary: bebebebebebebebe
+DUMP was called from source/stack.c :: stack_resize :: 293
+The stack address: [0x7fffef900d40]
+The data begining address: [0x1221370]
+capacity: 10
+num of elements: 6
+______elem #1: 5
+______elem #2: 2
+______elem #3: 5
+______elem #4: 3
+______elem #5: 5
+______elem #6: 4

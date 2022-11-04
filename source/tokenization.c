@@ -78,9 +78,7 @@ static array(Line) code_split(FILE* file) {
 
         char* line_of_code = (char*) calloc(sizeof(char), code_string_max_len);
 
-        fgets(line_of_code, code_string_max_len, file);
-
-        // printf("%s\n\n", ll.first_symbol);
+        fgets(line_of_code, code_string_max_len, file);;
 
         if (is_not_empty(line_of_code)) {
             lines.buffer[line_count].first_symbol = line_of_code;
@@ -104,7 +102,7 @@ static void tokens_output(array(Token) tokens) {
 
 
 
-status_t tokenize(array(Token)* token_sequence, const char* code_file_name) {
+status_t tokenize(array(Token)* token_sequence, const char* code_file_name, array(Line)* code_to_free) {
 
     ERROR_(is_bad_ptr(token_sequence), BAD_PTR);
     ERROR_(is_bad_ptr((void*) code_file_name), BAD_PTR);
@@ -143,7 +141,33 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name) {
                 }
             }     
             else {
-                type = (linecmp(words.buffer[0], "jump") == 0) ? COMMAND : NUMBER;
+
+                char* first_symbol = words.buffer[i].first_symbol;
+                size_t length =  words.buffer[i].length;
+
+                if (*(first_symbol) == '[') {
+
+                    if (*(first_symbol + length - 1) == ']') {
+                        
+                        Line address = {
+                            .first_symbol = first_symbol + 1,
+                            .length = length - 2
+                        };
+
+                        if (line_is_number(address)) {
+                            type = ADDRESS;
+                            words.buffer[i].first_symbol++;
+                            words.buffer[i].length -= 2;
+
+                        }
+                        else 
+                            type = COMMAND;
+                    }
+                }
+                else {
+
+                    type = (line_is_number(words.buffer[i])) ? NUMBER : COMMAND;
+                    }
             }
 
             tokens.buffer[token_id].type = type; 
@@ -153,11 +177,12 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name) {
             token_id++;
 
         }
+        free(words.buffer);
     }
 
     tokens.size = token_id;
     *token_sequence = tokens;
-
+    *code_to_free = code_lines;
     //tokens_output(tokens);
     return OK;
 

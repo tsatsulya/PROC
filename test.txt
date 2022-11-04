@@ -1,7 +1,24 @@
-push 3
-push -3
-add
-push 2
-jopa: 
+in
+pop [0]
+push 1
+pop [1]
+push 1
+pop [2]
+
+
+loop: 
+    push [1]
+    push 1
+    add
+    pop [1]
+    push [1]
+    push [2]
+    mul
     out
-    jump jopa
+    pop [2]
+    push [0]
+    push [1]
+    jb loop
+    
+
+

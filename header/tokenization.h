@@ -5,12 +5,15 @@
 #include "stdio.h"
 #include "strings.h"
 
+define_array(int);
+define_array(long);
+
 
 typedef enum TokenType {
     NUMBER    = 'N',
-    COMMAND  = 'I', // TODO: I would list all possible commands
+    COMMAND  = 'I', 
     LABEL = 'L', 
-    JUMP_TO = 'J' // TODO: I wouldn't extract jump in different file
+    ADDRESS = 'A'
 } TokenType;
 
 
@@ -29,4 +32,4 @@ static const int max_num_of_lines = 20;
 static const int start_max_num_of_tokens = max_num_of_lines * 2;
 
 
-status_t tokenize(array(Token)* token_sequence, const char* code_file_name);
+status_t tokenize(array(Token)* token_sequence, const char* code_file_name, array(Line)* code_to_free);

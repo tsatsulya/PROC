@@ -19,8 +19,8 @@ int main() {
     status_t status = assemble(&data);
     printf(" status %d\n", status);
     Processor proc;
-    cpu_load(&proc, "test_out.txt");
-    puts("a");
+    cpu_load(&proc, "bin_out.bin");
+    // puts("a");
     cpu_exec(&proc);
 
     return 0;

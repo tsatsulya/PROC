@@ -5,16 +5,30 @@
 #include "arrays.h"
 // TODO: chick enumchick
 
-static const int SET_LABEL  = 0x1abe1;
-static const int PUSH       = 1;
-static const int ADD        = 2;
-static const int SUB        = 3;
-static const int MUL        = 4;
-static const int DIV        = 5;
-static const int OUT        = 6;
-static const int HLT        = 7;
-static const int JUMP       = 8;
-static const int ERROR      = -1;
+
+
+enum {
+    SET_LABEL  = 0x1abe1,
+    PUSH       = 1,
+    ADD        = 2,
+    SUB        = 3,
+    MUL        = 4,
+    DIV        = 5,
+    OUT        = 6,
+    HLT        = 7,
+    JUMP       = 8,
+    ERROR      = -1,
+    PUSHA      = 9,
+    POP        = 10,
+    PRINT      = 11,
+    SCAN = 12,
+    IN = 13,
+    JB = 14,
+    JE = 15,
+    DUP = 16,
+};
+
+
 
 
 typedef struct Label {

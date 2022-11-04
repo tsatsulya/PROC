@@ -376,20 +376,6 @@ void stack_dump(Stack* stack, const char* file, const char* func, int line, unsi
         fprintf(dump_file, "StackOverflow!\n");
     }
 
-    if (status & INVALID_HASH) {
-        
-        fprintf(dump_file, "Hash was damaged!\n");
-        fprintf(dump_file, "Stack hash: %llu\n", stack->hash);
-        fprintf(dump_file, "Actual hash: %llu\n", stack_hash(stack));
-    }
-    fprintf(dump_file, "Stack hash: %llu\n", stack->hash);
-
-    if (status & DAMAGED_LEFT_CANARY || status & DAMAGED_RIGHT_CANARY) {
-
-        fprintf(dump_file, "Damaged canary(canaries)!\n");
-    }
-    print_canaries(stack, dump_file); 
-
 
     fclose(dump_file), dump_file = NULL;
 

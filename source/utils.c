@@ -3,6 +3,7 @@
 #include "stdio.h"
 
 // TODO: utils is a bit low-effort
+define_array(int);
 
 long long int pow_(int x, int power) {
     long long int result = 1;

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h> 
 
-typedef int Stack_data;
+typedef long int Stack_data;
 typedef long long int Canary_data;
 
 typedef struct Stack {

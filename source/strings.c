@@ -22,7 +22,6 @@ void puts_line(Line string) {
 }
 
 int linecmp(Line string1, char* string2) {
-    
     int length2 = strlen(string2);
     int min_len = min((int)string1.length, length2);
 
@@ -60,4 +59,18 @@ int str_to_int(Line string) { // TODO: bool* is_correct? (also see strtol)
         number += (n - '0') * (int)pow_(10, length - i-1);
     }
     return number * mult;
+}
+
+bool line_is_number(Line string) {
+   int length = string.length; 
+    if (!length) return false;
+
+    for (int i = 0; i < length; i++) {
+        if (i == 0 && string.first_symbol[i] == '-')
+            continue;
+        int n = string.first_symbol[i];
+        if (n < '0' || '9' < n)
+            return false;
+    }
+    return true;
 }
