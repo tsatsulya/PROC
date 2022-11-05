@@ -39,17 +39,17 @@ status_t cpu_load(Processor* cpu, const char* in_file_name) {
         return FILE_ERR;
 
     int num_of_commands = 0;
-    int s;
+    double s;
     
-    array(long) code = create_array(long, 16);
+    array(double) code = create_array(double, 16);
 
     size_t shift = 0;
 
-    int width = sizeof(long);
+    int width = sizeof(double);
 
-    while (fread(&s, sizeof(int), 1, in_file)) {
-        push_element(long, code, s);
-        printf("element %d\n", s);
+    while (fread(&s, sizeof(double), 1, in_file)) {
+        push_element(double, code, s);
+        printf("element %lf\n", s);
         fseek(in_file, (++shift)*width, SEEK_SET);
     }
     rewind(in_file);

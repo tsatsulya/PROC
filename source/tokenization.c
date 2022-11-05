@@ -172,7 +172,7 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name, arra
             }
             tokens.buffer[token_id].type = type; 
             tokens.buffer[token_id].name = words.buffer[i]; 
-            tokens.buffer[token_id].number = (i == 1) ? str_to_int(words.buffer[i]) : 0;
+            tokens.buffer[token_id].number = (i == 1) ? (double)str_to_int(words.buffer[i]) : 0;
             
             token_id++;
 

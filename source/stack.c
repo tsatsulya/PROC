@@ -365,7 +365,7 @@ void stack_dump(Stack* stack, const char* file, const char* func, int line, unsi
     
     print_size_info(stack, dump_file);
     stack_data_print(stack, dump_file);
-
+ 
     if (status & EMPTY_STACK) {
 
         fprintf(dump_file, "Removing element from empty stack!\n");

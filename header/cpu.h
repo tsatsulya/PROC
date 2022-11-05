@@ -5,14 +5,11 @@
 #include "stack.h" 
 typedef struct Processor {
 
-    array(long) code;
+    array(double) code;
 
     Stack* cpu_stack;
-    int RAM[0x10000];
+    double RAM[0x10000];
 
-    bool equal_flag;
-    bool above_flag;
-    bool less_flag;
 } Processor;
 
 

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-
 #define token_type_(i) tokens.buffer[i].type
 #define token_name_(i) tokens.buffer[i].name
 
@@ -31,8 +30,9 @@ status_t assemble(AsmData* data) {
     status_t status = tokenize(&tokens, *(data->in_file_name), &code_to_free);
     if (status != OK) return status;
     printf("tok status %d\n", status);
+
     int num_of_tokens = tokens.size;
-    array(long) token_sequence = create_array(long, num_of_tokens);
+    array(double) token_sequence = create_array(double, num_of_tokens);
 
     for (int i = 0; i < num_of_tokens; i++) {
         if (tokens.buffer[i].type == LABEL) 
@@ -63,7 +63,7 @@ status_t assemble(AsmData* data) {
 
         Line token_name = tokens.buffer[i].name;
         if (token_type_(i) == NUMBER) {
-            token_sequence.buffer[i] = str_to_int(token_name);
+            token_sequence.buffer[i] = (double)str_to_int(token_name);
         }
 
         else if (token_type_(i) == LABEL) {
@@ -73,7 +73,7 @@ status_t assemble(AsmData* data) {
                 .offset = i
             };
             push_element(Label, labels, lb);
-            push_element(long, token_sequence, SET_LABEL);
+            push_element(double, token_sequence, SET_LABEL);
 
         }
 
