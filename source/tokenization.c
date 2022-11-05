@@ -81,11 +81,15 @@ static array(Line) code_split(FILE* file) {
         fgets(line_of_code, code_string_max_len, file);;
 
         if (is_not_empty(line_of_code)) {
-            lines.buffer[line_count].first_symbol = line_of_code;
+            Line ll = {
+                .first_symbol = line_of_code,
+                .length = strlen(line_of_code),
+            };
+
+            push_element(Line, lines, ll);
             line_count++;
         }
     }
-    lines.size = line_count;
     return lines;
 }
 
@@ -120,28 +124,25 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name, arra
     int token_id = 0;
     int num_of_code_lines = code_lines.size;
 
-
     for (int line = 0; line < num_of_code_lines; line++) {
-
-
         array(Line) words = string_split(code_lines.buffer[line].first_symbol);
         // print_lines(words);
+
         for (long unsigned i = 0; i < words.size; i++) {
 
             TokenType type;
 
             if (i == 0) {
-
                 if (*(words.buffer[0].first_symbol + words.buffer[0].length - 1) == ':') {
                     type = LABEL;
                     words.buffer[0].length--;
                 }
                 else {
+
                     type = COMMAND;
                 }
             }     
-            else {
-
+            else {               
                 char* first_symbol = words.buffer[i].first_symbol;
                 size_t length =  words.buffer[i].length;
 
@@ -169,7 +170,6 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name, arra
                     type = (line_is_number(words.buffer[i])) ? NUMBER : COMMAND;
                     }
             }
-
             tokens.buffer[token_id].type = type; 
             tokens.buffer[token_id].name = words.buffer[i]; 
             tokens.buffer[token_id].number = (i == 1) ? str_to_int(words.buffer[i]) : 0;
@@ -177,13 +177,15 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name, arra
             token_id++;
 
         }
-        free(words.buffer);
-    }
 
+        free(words.buffer);
+
+    }
     tokens.size = token_id;
     *token_sequence = tokens;
     *code_to_free = code_lines;
     //tokens_output(tokens);
+    
     return OK;
 
 }

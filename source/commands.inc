@@ -129,7 +129,7 @@ DEF_CMD (OUT, "out", 0,
 
 }, 
 {
-    printf("%d\n", stack_get_last_element(&cpu_stack));
+    printf("%ld\n", stack_get_last_element(&cpu_stack));
 })
 
 
@@ -146,7 +146,7 @@ DEF_CMD (IN, "in", 0,
 }, 
 {
     int s;
-    scanf("%d", &s);
+    if (!scanf("%d", &s)) return INCORRECT_INPUT;
     stack_push(&cpu_stack, s);
 })
 
@@ -235,7 +235,6 @@ DEF_CMD (JE, "je", 0,
 
 DEF_CMD (JB, "jb", 0,
 {   
-    puts("JBJBJBJ");
     Token argument = tokens.buffer[i+1]; 
     push_element(int, token_sequence, JB);
     if (argument.type == COMMAND) 

@@ -30,7 +30,7 @@ status_t assemble(AsmData* data) {
 
     status_t status = tokenize(&tokens, *(data->in_file_name), &code_to_free);
     if (status != OK) return status;
-
+    printf("tok status %d\n", status);
     int num_of_tokens = tokens.size;
     array(int) token_sequence = create_array(int, num_of_tokens);
 
@@ -87,10 +87,6 @@ status_t assemble(AsmData* data) {
             #include "commands.inc"
 
             {   
-                print(token_type_(i));
-                puts_line(token_name_(i));
-                print(token_name_(i).length);
-                printf("is eq %d\n", linecmp(token_name_(i), "jb"));
                 puts("bl cho eto");
                 assert(false && "Illegal command!");
             } 
@@ -101,7 +97,6 @@ status_t assemble(AsmData* data) {
     for (int i = 0; i < num_of_tokens; i++) { 
 
         if (is_jump(token_sequence.buffer[i])) {
-            puts("JUMP!!!!");
             Line label = tokens.buffer[i+1].name;
             int label_id;
 
@@ -119,25 +114,25 @@ status_t assemble(AsmData* data) {
             token_sequence.buffer[i+1] = labels.buffer[label_id].offset;
         }
     }
-
+    puts("a");
     // for (long unsigned i = 0; i < token_sequence.size; i++) {
     //     printf("tok %d\n", token_sequence.buffer[i]);
     // }
 
     FILE* file_out = fopen("bin_out.bin", "w");
+    puts("a");
 
         
     for (int i = 0; i < num_of_tokens; i++) {
         fwrite(&token_sequence.buffer[i], sizeof(token_sequence.buffer[i]), 1, file_out);
     }
+    puts("a");
 
     //FREE CODE_LINES!!!!!!111
-    free(tokens.buffer);
     free(token_sequence.buffer);
-    for (long unsigned i = 0; i < code_to_free.size; i++) {
-        free(code_to_free.buffer[i].first_symbol);
-        
-    }
+
+    puts("a");
+
     free(code_to_free.buffer);
     free(labels.buffer);
     fclose(file_out);

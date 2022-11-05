@@ -25,7 +25,7 @@ typedef struct Token {
 define_array(Token);
 
 
-static const int code_string_max_len = 32;
+static const int code_string_max_len = 10000;
 static const int input_format_max_len = 16; 
 static const int words_in_line = 2;
 static const int max_num_of_lines = 20;

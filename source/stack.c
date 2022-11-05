@@ -227,7 +227,7 @@ void stack_data_print(Stack* stack, FILE* file) {
     Stack_data* data = stack_get_data_base_ptr(stack);
 
     for (int i = 0; i < (int)stack->element_count; i++) {
-        fprintf(file, "______elem #%d: %d\n", i+1, *(data + i));
+        fprintf(file, "______elem #%d: %ld\n", i+1, *(data + i));
     }
 }
 
