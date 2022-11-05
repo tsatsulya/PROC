@@ -26,6 +26,8 @@ enum {
     JB = 14,
     JE = 15,
     DUP = 16,
+    POW = 17,
+    SQRT = 18
 };
 
 

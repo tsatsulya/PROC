@@ -7,6 +7,7 @@
 
 define_array(int);
 define_array(long);
+define_array(double);
 
 
 typedef enum TokenType {
@@ -20,7 +21,7 @@ typedef enum TokenType {
 typedef struct Token {
     TokenType type;
     Line name;
-    double number; 
+    long number; 
 } Token;
 define_array(Token);
 

@@ -2,6 +2,9 @@
 #include "stdlib.h"
 #include "string.h"
 #include "assert.h"
+
+
+typedef double _type_; 
 // define_array(int);
 
 //ommands.inc
@@ -35,14 +38,18 @@ status_t cpu_load(Processor* cpu, const char* in_file_name) {
     if (in_file == NULL)
         return FILE_ERR;
 
+    int num_of_commands = 0;
     int s;
+    
     array(long) code = create_array(long, 16);
+
     size_t shift = 0;
-    int width = sizeof(int);
+
+    int width = sizeof(long);
 
     while (fread(&s, sizeof(int), 1, in_file)) {
         push_element(long, code, s);
-        //printf("element %d\n", s);
+        printf("element %d\n", s);
         fseek(in_file, (++shift)*width, SEEK_SET);
     }
     rewind(in_file);
@@ -61,7 +68,6 @@ status_t cpu_exec(Processor* cpu) {
 
     for (long unsigned i = 0; i < cpu->code.size; i++) {
         int command_id = cpu->code.buffer[i];
-        //printf("command %d\n", command_id);
         if (command_id == SET_LABEL) continue;
 
         #define DEF_CMD(id, name, arg, assemble, code_to_run) \

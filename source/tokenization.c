@@ -99,7 +99,7 @@ static void tokens_output(array(Token) tokens) {
         printf("type: %c\n", tokens.buffer[i].type);
         printf("name:");
         puts_line(tokens.buffer[i].name);
-        printf("number: %f\n", tokens.buffer[i].number);
+        printf("number: %ld\n", tokens.buffer[i].number);
         puts("");
     }
 }
@@ -126,7 +126,7 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name, arra
 
     for (int line = 0; line < num_of_code_lines; line++) {
         array(Line) words = string_split(code_lines.buffer[line].first_symbol);
-        //print_lines(words);
+        // print_lines(words);
 
         for (long unsigned i = 0; i < words.size; i++) {
 
@@ -172,7 +172,8 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name, arra
             }
             tokens.buffer[token_id].type = type; 
             tokens.buffer[token_id].name = words.buffer[i]; 
-            tokens.buffer[token_id].number = (i == 1) ? (double)str_to_int(words.buffer[i]) : 0;
+            tokens.buffer[token_id].number = (i == 1) ? str_to_int(words.buffer[i]) : 0;
+            
             token_id++;
 
         }
@@ -183,7 +184,7 @@ status_t tokenize(array(Token)* token_sequence, const char* code_file_name, arra
     tokens.size = token_id;
     *token_sequence = tokens;
     *code_to_free = code_lines;
-    //tokens_output(tokens);
+    tokens_output(tokens);
     
     return OK;
 

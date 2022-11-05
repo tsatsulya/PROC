@@ -5,8 +5,8 @@
 // TODO: utils is a bit low-effort
 define_array(int);
 
-long long int pow_(int x, int power) {
-    long long int result = 1;
+double  pow_(double x, int power) {
+    double result = 1;
     for (int y = 0; y < power; y++) {
         result*=x;
     }

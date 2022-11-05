@@ -5,8 +5,6 @@
 #include "arrays.h"
 #include "stdbool.h"
 
-#define array(type) array_##type
-
 typedef struct Line {
     char* first_symbol;
     size_t length;
