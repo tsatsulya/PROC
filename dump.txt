@@ -1,11 +1,11 @@
 DUMP was called from source/stack.c :: stack_resize :: 293
-The stack address: [0x7fff53e7e4b0]
-The data begining address: [0x16ff880]
+The stack address: [0x7ffdece91b10]
+The data begining address: [0x4a4880]
 capacity: 10
 num of elements: 6
-______elem #1: 5
-______elem #2: 2
-______elem #3: 5
-______elem #4: 3
-______elem #5: 5
-______elem #6: 4
+______elem #1: 0
+______elem #2: 0
+______elem #3: 0
+______elem #4: 0
+______elem #5: 0
+______elem #6: 0

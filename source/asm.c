@@ -8,7 +8,7 @@
 #define token_type_(i) tokens.buffer[i].type
 #define token_name_(i) tokens.buffer[i].name
 
-// define_array(int);
+define_array(double);
 
 #define print(i) printf("%ld\n", i);
 
@@ -32,7 +32,7 @@ status_t assemble(AsmData* data) {
     if (status != OK) return status;
     printf("tok status %d\n", status);
     int num_of_tokens = tokens.size;
-    array(int) token_sequence = create_array(int, num_of_tokens);
+    array(double) token_sequence = create_array(double, num_of_tokens);
 
     for (int i = 0; i < num_of_tokens; i++) {
         if (tokens.buffer[i].type == LABEL) 
@@ -73,7 +73,7 @@ status_t assemble(AsmData* data) {
                 .offset = i
             };
             push_element(Label, labels, lb);
-            push_element(int, token_sequence, SET_LABEL);
+            push_element(double, token_sequence, SET_LABEL);
 
         }
 
@@ -114,14 +114,11 @@ status_t assemble(AsmData* data) {
             token_sequence.buffer[i+1] = labels.buffer[label_id].offset;
         }
     }
-    puts("a");
     // for (long unsigned i = 0; i < token_sequence.size; i++) {
     //     printf("tok %d\n", token_sequence.buffer[i]);
     // }
 
     FILE* file_out = fopen("bin_out.bin", "w");
-    puts("a");
-
         
     for (int i = 0; i < num_of_tokens; i++) {
         fwrite(&token_sequence.buffer[i], sizeof(token_sequence.buffer[i]), 1, file_out);
