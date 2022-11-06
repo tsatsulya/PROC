@@ -33,3 +33,4 @@ bool is_bad_ptr(void* ptr) {
     if ((long int)ptr < 0x0000ffff) return true;
     return false;
 }
+

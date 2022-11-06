@@ -1,6 +1,7 @@
 #pragma once
 #include <stdbool.h>
-
+#include "stdio.h"
+#include "math.h"
 
 typedef enum status_t {
     OK = 0              ,
@@ -14,6 +15,5 @@ typedef enum status_t {
 double pow_(double x, int power);
 bool string_is_number(const char* string);
 bool is_bad_ptr(void* ptr);
-
 
 

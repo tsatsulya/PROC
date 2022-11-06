@@ -21,13 +21,18 @@ enum {
     PUSHA      = 9,
     POP        = 10,
     PRINT      = 11,
-    SCAN = 12,
-    IN = 13,
-    JB = 14,
-    JE = 15,
-    DUP = 16,
-    POW = 17,
-    SQRT = 18
+    SCAN       = 12,
+    IN         = 13,
+    JB         = 14,
+    JE         = 15,
+    DUP        = 16,
+    POW        = 17,
+    SQRT       = 18,
+    JA = 19,
+    INC = 20,
+    PUTC = 21,
+    JAE = 22,
+    ABS = 23,
 };
 
 

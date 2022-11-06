@@ -11,7 +11,7 @@
 
 #define print(i) printf("%ld\n", i);
 
-static int jumps[] = {JUMP, JB, JE};
+static int jumps[] = {JUMP, JB, JE, JA, JAE};
 static int jumps_array_size = sizeof(jumps)/sizeof(int);
 
 static bool is_jump(int command_id) {
@@ -20,16 +20,42 @@ static bool is_jump(int command_id) {
     return false;
 }
 
+static double sqrt_(double x)
+{
+    double y;
+    int p, square, c;
+
+    p = 0;
+    do
+    {
+        p++;
+        square = (p+1) * (p+1);
+    }
+    while (x > square);
+
+    y = (double)p;
+    c = 0;
+
+    while (c < 10)
+    {
+        y = (x/y + y)/2;
+        if (y * y == x)
+            return y;
+        c++;
+    }
+    return y;
+}
+
 status_t assemble(AsmData* data) {
     
     array(Token) tokens;
     array(Line) code_to_free;
-
+    Token argument;
     int num_of_labels = 0;
 
     status_t status = tokenize(&tokens, *(data->in_file_name), &code_to_free);
     if (status != OK) return status;
-    printf("tok status %d\n", status);
+    //printf("tok status %d\n", status);
 
     int num_of_tokens = tokens.size;
     array(double) token_sequence = create_array(double, num_of_tokens);
@@ -40,24 +66,6 @@ status_t assemble(AsmData* data) {
     }
 
     array(Label) labels = create_array(Label, num_of_labels);
-
-    //FILE* file_out = fopen(*(data->out_file_name), "w"); // ?
-
-    // TODO: this is the main i dream of:
-    // int main() {
-    //     const char* input_text = read_file(text);
-
-    //     array(token) tokens = tokenize(input_text);
-
-    //     array(instruction)
-    //         instructions = assemble(tokens);
-
-    //     write_binary(instructions, output_file);
-    // }
-
-    // AssembleContext ctx = {};
-    // assemble(ctx);
-    // assemble(ctx);
 
     for (int i = 0; i < num_of_tokens; i++) { 
 
@@ -78,7 +86,7 @@ status_t assemble(AsmData* data) {
         }
 
         else if (token_type_(i) == COMMAND) {
-            puts_line(token_name_(i));
+            //puts_line(token_name_(i));
             #define DEF_CMD(id, name, arg, assemble, code_to_run)               \
                 if (linecmp(token_name_(i), name) == 0) {                       \
                      assemble                                                   \
@@ -114,25 +122,19 @@ status_t assemble(AsmData* data) {
             token_sequence.buffer[i+1] = labels.buffer[label_id].offset;
         }
     }
-    puts("a");
     // for (long unsigned i = 0; i < token_sequence.size; i++) {
-    //     printf("tok %d\n", token_sequence.buffer[i]);
+    //     printf("tok %d\n", (int)token_sequence.buffer[i]);
     // }
 
     FILE* file_out = fopen("bin_out.bin", "w");
-    puts("a");
-
         
     for (int i = 0; i < num_of_tokens; i++) {
         fwrite(&token_sequence.buffer[i], sizeof(token_sequence.buffer[i]), 1, file_out);
     }
-    puts("a");
 
     //FREE CODE_LINES!!!!!!111
     free(token_sequence.buffer);
-
-    puts("a");
-
+    free(tokens.buffer);
     free(code_to_free.buffer);
     free(labels.buffer);
     fclose(file_out);

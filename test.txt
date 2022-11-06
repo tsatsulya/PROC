@@ -1,5 +1,4 @@
-in
-pop [0]
+scan [0]
 push 1
 pop [1]
 push 1

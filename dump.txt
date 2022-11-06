@@ -1,10 +1,10 @@
 DUMP was called from source/stack.c :: stack_change_length :: 158
-The stack address: [0x7ffdb9543a80]
-The data begining address: [0x5e4880]
+The stack address: [0x7fffe07e59b0]
+The data begining address: [0x1576ad0]
 capacity: 10
 num of elements: 5
-______elem #1: 0
-______elem #2: 0
-______elem #3: 0
-______elem #4: 0
-______elem #5: 0
+______elem #1: 5.000000
+______elem #2: 2.000000
+______elem #3: 5.000000
+______elem #4: 3.000000
+______elem #5: 5.000000

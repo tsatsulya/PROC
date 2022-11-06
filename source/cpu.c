@@ -3,6 +3,7 @@
 #include "string.h"
 #include "assert.h"
 
+const int EPS = 4;
 
 typedef double _type_; 
 // define_array(int);
@@ -30,6 +31,43 @@ typedef double _type_;
 //     }
 // }
 
+static double sqrt_(double x)
+{
+    double y;
+
+    int square, c;
+    int p = 0;
+
+    do {
+        p++;
+        square = (p+1) * (p+1);
+    } while (x > square);
+
+    y = (double)p;
+    c = 0;
+
+    while (c < 50) {
+        y = (x/y + y)/2;
+        if (y * y == x)
+            return y;
+        c++;
+    }
+    return y;
+}
+
+static double double_round(double x, int decimal) {
+    int multiplier = pow_(10, decimal);
+    x = x * multiplier + 0.5;
+    x = (double)((int)x) /multiplier;
+    return x; 
+}
+
+static double double_cmp(double x, double y, int decimal) {
+    x = double_round(x, decimal);
+    y = double_round(y, decimal);
+    return x - y;
+}
+
 status_t cpu_load(Processor* cpu, const char* in_file_name) {
 
     if (is_bad_ptr(cpu) || is_bad_ptr((void*)in_file_name)) return BAD_PTR;
@@ -38,7 +76,6 @@ status_t cpu_load(Processor* cpu, const char* in_file_name) {
     if (in_file == NULL)
         return FILE_ERR;
 
-    int num_of_commands = 0;
     double s;
     
     array(double) code = create_array(double, 16);
@@ -49,7 +86,7 @@ status_t cpu_load(Processor* cpu, const char* in_file_name) {
 
     while (fread(&s, sizeof(double), 1, in_file)) {
         push_element(double, code, s);
-        printf("element %lf\n", s);
+        //printf("element %lf\n", s);
         fseek(in_file, (++shift)*width, SEEK_SET);
     }
     rewind(in_file);
@@ -64,30 +101,25 @@ status_t cpu_exec(Processor* cpu) {
 
     Stack cpu_stack;
     stack_init(&cpu_stack, 5);
-    printf("size %ld\n\n\n\n", cpu->code.size);
 
     for (long unsigned i = 0; i < cpu->code.size; i++) {
         int command_id = cpu->code.buffer[i];
         if (command_id == SET_LABEL) continue;
 
-        #define DEF_CMD(id, name, arg, assemble, code_to_run) \
-            if (command_id == id) {                           \
-                code_to_run                         \
-            } else                                  \
+        #define DEF_CMD(id, name, arg, assemble, code_to_run)   \
+            if (command_id == id) {                             \
+                code_to_run                                     \
+            } else                                              \
 
 
         #include "commands.inc"
 
         {
+            printf("command id %d\n", command_id);
             assert(false && "Illegal command!");
         } 
     }
+    free (cpu->code.buffer);
+    stack_destruct(&cpu_stack);
     return OK;
 }
-
-
-// static const int SET_LABEL  = 0x1abe1;
-// static const int OUT        = 6;
-// static const int HLT        = 7;
-// static const int JUMP       = 8;
-// static const int ERROR      = -1;

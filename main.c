@@ -5,8 +5,8 @@
 
 int main() {
 
-    array(Token) tokens = create_array(Token, 0);
-    array(Label) labels = create_array(Label, 0);
+    array(Token) tokens;
+    array(Label) labels;
 
     char* in_file_name = "test.txt";
     char* out_file_name = "test_out.txt";  
@@ -17,11 +17,16 @@ int main() {
         .labels = labels
     };
     status_t status = assemble(&data);
-    printf(" status %d\n", status);
     Processor proc;
     cpu_load(&proc, "bin_out.bin");
-    // puts("a");
     cpu_exec(&proc);
 
     return 0;
+
+    //Сашины комменты
+    //ввод дабла
+    //вывод дабла
+    //функции 
+    //проверка на скомпилированность
+    
 }
