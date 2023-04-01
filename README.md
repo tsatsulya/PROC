@@ -1,1 +1,1 @@
-# PROC
+Simple processor model. Accepts pseudo assembler code, tokenizes the input code, and executes the list of entered	commands (or returns a specific error). New instructions are developed and implemented into pseudo assembler syntax	using code generation. 
